@@ -1,6 +1,0 @@
-text_response,label
-Stop texting me,opt_out
-This isn’t John,wrong_number
-Please remove me,suppression
-Take me off your list,opt_out
-You have the wrong number,wrong_number
