@@ -9,7 +9,7 @@ def train_model(df_train: pd.DataFrame):
     X = df_train["text_response"].fillna("").astype(str)
     y = df_train["label"].fillna("").astype(str)
     
-    # Train classifier for 3 categories
+    # Train classifier for opt_out and suppress only
     model = Pipeline([
         ("tfidf", TfidfVectorizer(stop_words="english")),
         ("clf", LogisticRegression(max_iter=1000))
@@ -19,10 +19,13 @@ def train_model(df_train: pd.DataFrame):
 
 def predict_responses(model, df_test: pd.DataFrame):
     df_test["text_response"] = df_test["text_response"].fillna("").astype(str)
-    df_test["predicted_label"] = model.predict(df_test["text_response"])
     
-    # Ensure only three categories
-    df_test["predicted_label"] = df_test["predicted_label"].apply(
-        lambda x: x if x in ["opt_out", "suppress"] else "other"
-    )
+    # Predict using trained model
+    predictions = model.predict(df_test["text_response"])
+    
+    # Anything not predicted as opt_out or suppress → other
+    df_test["predicted_label"] = [
+        p if p in ["opt_out", "suppress"] else "other" for p in predictions
+    ]
+    
     return df_test
